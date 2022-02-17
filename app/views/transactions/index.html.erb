@@ -2,6 +2,19 @@
 
 <!-- Step 1: List all transaction, starting with the ICO -->
 
+<ol>
+    <% for transaction in Transaction.all %>
+    <li>
+        <% if transaction.from_user_id %>
+            <%= transaction.amount %> from <%= transaction.from_user.name %> to <%= transaction.to_user.name %> 
+        <% else%>
+        Initial coin offering: <%= transaction.amount %> to <%= transaction.to_user.name %> 
+        <% end %>
+    </li>
+    <% end %>
+</ol>
+
+
 <!-- Step 2: Calculate and display the balances -->
 
 <!-- 
@@ -11,4 +24,61 @@ Balance for Ben: 2516 KC
 Balance for Evan: 1164 KC
 Balance for Anthony: 1456 KC
 Balance for Krystina: 3516 KC 
+-->
+
+
+<ul>
+    <% for user in User.all%>
+        <% 
+        balance = 0
+        balance = balance + Transaction.where({ to_user_id: user.id }).sum(:amount)
+        balance = balance - Transaction.where({ from_user_id: user.id }).sum(:amount)
+        %>
+        <li>
+        Balance for <%= user.name%>: <%= balance %> KC
+        </li>
+    <% end %>
+</ul>
+
+
+<!-- Alternatively, using a <table>:
+
+<table>
+  <tr>
+    <th>From User</th>
+    <th>To User</th>
+    <th>Amount</th>
+  </tr>
+  <% for transaction in Transaction.all %>
+    <tr>
+      <td>
+        <% if transaction.from_user %>
+           <%= transaction.from_user.name %>
+        <% else %>
+          Initial coin offering
+        <% end %>
+      </td>
+      <td><%= transaction.to_user.name %></td>
+      <td><%= transaction.amount %></td>
+    </tr>
+  <% end %>
+</table>
+
+<table>
+  <tr>
+    <th>User</th>
+    <th>Balance</th>
+  </tr>
+  <% for user in User.all %>
+    <% 
+      balance = 0
+      balance = balance + Transaction.where({ to_user_id: user.id }).sum(:amount)
+      balance = balance - Transaction.where({ from_user_id: user.id }).sum(:amount)
+    %>
+    <tr>
+      <td><%= user.name %></td>
+      <td><%= balance %> KC</td>
+    </tr>
+  <% end %>
+</table>
 -->
